@@ -5,36 +5,31 @@ exports.handler = async (event, context, callback) => {
     let numbers = [["0"], ["1"], ["A", "B", "C"], ["D", "E", "F"], ["G", "H", "I"], ["J", "K", "L"], ["M", "N", "O"], ["P", "Q", "R", "S"], ["T", "U", "V"], ["W", "X", "Y", "Z"]];
     wordlist = words.words;
     let phone = event['Details']['ContactData']['CustomerEndpoint'].Address.substring(2);
-//phone = "3032468026";
-   // phone = '7209404094';
+    let tableName = process.env.TABLE_NAME
     let subset = [];
     wordlist.forEach((word) => {
         if (wordlist.length > 2 && word.length < 6) {
             subset.push(word);
         }
-    })
+    });
+
     let gparams = {
         Key: {
             "phone": phone
         },
-        TableName: "phones"
+        TableName: tableName
     };
+
     let returnMess = "";
-   returnMess =  await db.get(gparams).promise();
-    console.log("RM",returnMess);
-    if(typeof returnMess.Item !== 'undefined'){
-        console.log("RM@",returnMess.Item.message);
+    returnMess = await db.get(gparams).promise();
+
+    if (typeof returnMess.Item !== 'undefined') {
+        console.log("RM@", returnMess.Item.message);
         return returnMess.Item.message;
     }
-   // console.log("Gres",gres);
-  //  if(gres){
-  //      return gres;
-   // }
-
-//  let phone = "8775796283";
 
     const combine = ([head, ...[headTail, ...tailTail]]) => {
-        if (!headTail) return head
+        if (!headTail) return head;
         const combined = headTail.reduce((acc, x) => {
             return acc.concat(head.map(h => `${h}${x}`))
         }, [])
@@ -67,16 +62,8 @@ exports.handler = async (event, context, callback) => {
     }
 
     let vowelPotential = preVowel(phone);
-    console.log("PV", vowelPotential);
     let res = combine([numbers[phone[0]], numbers[phone[1]], numbers[phone[2]], numbers[phone[3]], numbers[phone[4]], numbers[phone[5]], numbers[phone[6]], numbers[phone[7]], numbers[phone[8]], numbers[phone[9]]])
     let count = 0;
-//let shortlist = []
-//  for(let d = 0;d< daleChall.length;d++){
-// daleChall.forEach((word) => {
-//      if (word.length > 2 && word.length < 7) {
-////          shortlist.push(word)
-//      }
-//  }
     let resarray = []
     let rr = 0
     let message = ""
@@ -124,18 +111,14 @@ exports.handler = async (event, context, callback) => {
         return b[0] - a[0]
     });
     resarray.length = 5;
-    for (let g = 0; g < resarray.length; g++) {
-        console.log(resarray[g]);
-    }
     var params = {
         Item: {
             "phone": phone,
             "data": resarray,
             "message": message
         },
-        TableName: 'phones'
+        TableName: tableName
     }
     await db.put(params).promise();
-    console.log("ra", resarray[0][1]);
     return message;
 }

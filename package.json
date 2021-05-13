@@ -13,6 +13,7 @@
     "@aws-sdk/client-dynamodb": "^3.14.0",
     "aws-sdk": "^2.903.0",
     "dale-chall": "^2.0.0",
+    "semgrep": "^0.0.1",
     "syllable": "^5.0.0"
   }
 }
